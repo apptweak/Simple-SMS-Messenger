@@ -103,7 +103,8 @@ fun Context.getMessages(threadId: Long): ArrayList<Message> {
         val phoneNumber = PhoneNumber(senderNumber, 0, "", senderNumber)
         val participant = SimpleContact(0, 0, senderName, photoUri, arrayListOf(phoneNumber), ArrayList(), ArrayList())
         val isMMS = false
-        val message = Message(id, body, type, status, arrayListOf(participant), date, read, thread, isMMS, null, senderName, photoUri, subscriptionId)
+        val notifiedSlack = false
+        val message = Message(id, body, type, status, arrayListOf(participant), date, read, thread, isMMS, null, senderName, photoUri, subscriptionId, notifiedSlack)
         messages.add(message)
     }
 
@@ -171,7 +172,7 @@ fun Context.getMMS(threadId: Long? = null, sortOrder: String? = null): ArrayList
             senderPhotoUri = namePhoto.photoUri ?: ""
         }
 
-        val message = Message(mmsId, body, type, status, participants, date, read, threadId, isMMS, attachment, senderName, senderPhotoUri, subscriptionId)
+        val message = Message(mmsId, body, type, status, participants, date, read, threadId, isMMS, attachment, senderName, senderPhotoUri, subscriptionId, false)
         messages.add(message)
 
         participants.forEach {

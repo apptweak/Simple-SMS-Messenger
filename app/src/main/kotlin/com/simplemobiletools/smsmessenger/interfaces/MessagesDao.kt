@@ -38,6 +38,9 @@ interface MessagesDao {
     @Query("UPDATE messages SET status = :status WHERE id = :id")
     fun updateStatus(id: Long, status: Int): Int
 
+    @Query("UPDATE messages SET notified_slack = :notified WHERE id = :id")
+    fun updateNotifiedSlack(id: Long, notified: Boolean)
+
     @Query("DELETE FROM messages WHERE id = :id")
     fun delete(id: Long)
 
