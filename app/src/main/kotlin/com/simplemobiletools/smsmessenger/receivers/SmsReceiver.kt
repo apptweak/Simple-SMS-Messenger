@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.os.Handler
 import android.os.Looper
 import android.provider.Telephony
+import android.util.Log
 import com.simplemobiletools.commons.extensions.getMyContactsCursor
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -18,8 +19,12 @@ import com.simplemobiletools.commons.models.PhoneNumber
 import com.simplemobiletools.commons.models.SimpleContact
 import com.simplemobiletools.smsmessenger.R
 import com.simplemobiletools.smsmessenger.extensions.*
+import com.simplemobiletools.smsmessenger.helpers.SlackNotifier
 import com.simplemobiletools.smsmessenger.helpers.refreshMessages
 import com.simplemobiletools.smsmessenger.models.Message
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SmsReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
@@ -72,6 +77,9 @@ class SmsReceiver : BroadcastReceiver() {
                         val message =
                             Message(newMessageId, body, type, status, participants, messageDate, false, threadId, false, null, address, "", subscriptionId)
                         context.messagesDB.insertOrUpdate(message)
+
+                        notifySlack(phoneNumber, date, message)
+
                         refreshMessages()
                     }
 
@@ -79,6 +87,16 @@ class SmsReceiver : BroadcastReceiver() {
                 }
             }
         }
+    }
+
+    private fun notifySlack(phoneNumber: PhoneNumber, date: Long, message: Message) {
+        val date = Date(date)
+        val formatter = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
+
+        val msg = "[${formatter.format(date)}] ${phoneNumber.normalizedNumber} - ${message.body}"
+        Log.println(Log.DEBUG, "SmsReceiver", msg)
+
+        SlackNotifier.notifySlack(msg)
     }
 
     private fun getPhotoForNotification(address: String, context: Context): Bitmap? {
