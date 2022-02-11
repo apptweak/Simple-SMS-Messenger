@@ -1,7 +1,9 @@
 package com.simplemobiletools.smsmessenger.helpers
 
+import android.content.Context
 import android.util.Log
 import com.simplemobiletools.commons.helpers.ensureBackgroundThread
+import com.simplemobiletools.smsmessenger.R
 import java.io.OutputStreamWriter
 import java.lang.Exception
 import java.net.URL
@@ -9,10 +11,9 @@ import javax.net.ssl.HttpsURLConnection
 
 class SlackNotifier {
     companion object {
-        private final val webhookUrl = URL("https://hooks.slack.com/services/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")
-
-        fun notifySlack(message: String) {
+        fun notifySlack(context: Context, message: String) {
             ensureBackgroundThread {
+                val webhookUrl = URL(context.getString(R.string.slack_url))
                 val connection = webhookUrl.openConnection() as HttpsURLConnection
                 try {
                     connection.requestMethod = "POST"
@@ -24,7 +25,7 @@ class SlackNotifier {
                     writer.close()
                 }
                 catch (e: Exception) {
-                    Log.println(Log.ERROR, "SlackNotifier", e.localizedMessage);
+                    Log.println(Log.ERROR, "SlackNotifier", e.localizedMessage)
                 }
                 finally {
                     Log.println(Log.DEBUG, "SlackNotifier", connection.responseCode.toString())

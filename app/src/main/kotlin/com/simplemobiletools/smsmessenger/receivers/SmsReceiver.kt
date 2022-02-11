@@ -78,7 +78,7 @@ class SmsReceiver : BroadcastReceiver() {
                             Message(newMessageId, body, type, status, participants, messageDate, false, threadId, false, null, address, "", subscriptionId)
                         context.messagesDB.insertOrUpdate(message)
 
-                        notifySlack(phoneNumber, date, message)
+                        notifySlack(context, phoneNumber, date, message)
 
                         refreshMessages()
                     }
@@ -89,14 +89,14 @@ class SmsReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun notifySlack(phoneNumber: PhoneNumber, date: Long, message: Message) {
+    private fun notifySlack(context: Context, phoneNumber: PhoneNumber, date: Long, message: Message) {
         val date = Date(date)
         val formatter = SimpleDateFormat("yyyy/MM/dd HH:mm:ss")
 
         val msg = "[${formatter.format(date)}] ${phoneNumber.normalizedNumber} - ${message.body}"
         Log.println(Log.DEBUG, "SmsReceiver", msg)
 
-        SlackNotifier.notifySlack(msg)
+        SlackNotifier.notifySlack(context, msg)
     }
 
     private fun getPhotoForNotification(address: String, context: Context): Bitmap? {

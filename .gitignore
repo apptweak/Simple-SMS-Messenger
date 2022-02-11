@@ -8,3 +8,4 @@
 /captures
 keystore.jks
 keystore.properties
+**/*/res/values/slack.xml
